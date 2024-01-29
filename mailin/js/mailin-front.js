@@ -15,7 +15,7 @@ var sibVerifyCallback = function (response) {
                 if (requiredField !== undefined) {
                     sibErrMsg.requiredField = requiredField;
                 }
-		form.find('.sib_msg_disp').html('<p class="sib-alert-message sib-alert-message-warning ">' + sibErrMsg.requiredField + '</p>').show();
+                form.find('.sib_msg_disp').html('<p class="sib-alert-message sib-alert-message-warning ">' + sibErrMsg.requiredField + '</p>').show();
                 return;
             }
         });
@@ -170,6 +170,23 @@ jQuery(document).ready(function(){
                     if (data.redirect && (data.status === 'success' || data.status === 'update')) {
                         window.location.href = data.redirect;
                     }
+
+                    //Render the cloudflare captcha again
+                    if (typeof data.turnstileCaptcha !== 'undefined' && data.turnstileCaptcha) {
+                        jQuery.each(form.find('.cf-turnstile'), function () {
+                            var siteKey = jQuery(this).data("sitekey");
+                            var cfResponse = jQuery('input[name="cf-turnstile-response"]').val();
+                            if (cfResponse) {
+                                var idToBeRendered = "#cf-turnstile-"+siteKey;
+                                turnstile.render(idToBeRendered, {
+                                    sitekey: siteKey,
+                                    callback: function(token) {
+                                        console.log("Challenge Success");
+                                    },
+                                });
+                            }
+                        });
+                    }
                     var previous_code = form.find('.sib-cflags').data('dial-code');
                     if ( previous_code )
                     {
@@ -298,3 +315,6 @@ jQuery(document).ready(function () {
         sessionStorage.setItem("formIdRecapcha", "#" + jQuery(row).attr('id'));
     })
 })
+
+function errorCallbackForTurnstileErrors(){
+}
