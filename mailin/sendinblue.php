@@ -3,7 +3,7 @@
  * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.79
+ * Version: 3.1.81
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -141,6 +141,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				'data-require' => true,
 				'data-sitekey' => true,
  				'data-error-callback' => true,
+				'data-theme' => true,
 			),
 			'a' => array(
 				'href' => true,
