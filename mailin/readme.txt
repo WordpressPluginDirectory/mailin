@@ -2,9 +2,9 @@
  Contributors: neeraj_slit
 Tags: smtp, email, form, newsletter, subscribe
 Requires at least: 4.4
-Tested up to: 6.5.2
+Tested up to: 6.5.4
 Requires PHP: 5.6
-Stable tag: 3.1.81
+Stable tag: 3.1.82
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,10 @@ In order to create a signup form, you need to:
 2. Integrate the form in a sidebar using a widget from WP panel > Appearance > Widgets. The Brevo widget form should appear in your widgets list, you just to have to drag and drop the widget into the sidebar of your choice.
 
 == Changelog ==
+
+= 3.1.82 =
+* Plugin is now compatible with Wordpress v6.5.4
+* Improvement in query for table update
 
 = 3.1.81 =
 * Included ability to set light/dark theme for Cloudflare Capthca

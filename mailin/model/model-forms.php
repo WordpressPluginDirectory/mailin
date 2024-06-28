@@ -29,7 +29,6 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 			//Check if table exists
 			$table_check_query = 'SHOW TABLES LIKE ' . "'" . $table_name .  "'" . ';';
 			$wpdb->query($table_check_query);
-			
 
 			//table doesnot exist
 			if (empty($wpdb->last_result)) {
@@ -78,7 +77,6 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 				}
 
 			} else {
-				
 				// check if select captcha type fields exist
 				$selectCaptchaType = 'selectCaptchaType';
 				$result = $wpdb->query( $wpdb->prepare( "SHOW COLUMNS FROM `$table_name` LIKE %s ", $selectCaptchaType ) ); // db call ok; no-cache ok.
@@ -87,9 +85,9 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 					$alter_query = "ALTER TABLE " . $table_name . "
 						ADD COLUMN selectCaptchaType int(1) NOT NULL DEFAULT 0 After gCaptcha_site,
 						ADD COLUMN cCaptchaType int(1) NOT NULL DEFAULT 0 After selectCaptchaType,
-						ADD COLUMN cCaptcha_secret varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER selectCaptchaType,
+						ADD COLUMN cCaptchaStyle varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptchaType,
+						ADD COLUMN cCaptcha_secret varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptchaStyle,
 						ADD COLUMN cCaptcha_site varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptcha_secret;
-						ADD COLUMN cCaptchaStyle varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptcha_site;
 					";
 					$wpdb->query( $alter_query );
 					$queryExecuted  = true;
@@ -107,7 +105,6 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 						$wpdb->query( $alter_query );
 					}
 				}
-				
 			}
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		}
