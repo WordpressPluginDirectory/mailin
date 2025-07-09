@@ -97,7 +97,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			try {
 				$push_app = SIB_Push_Utils::get_push_application();
 			} catch (Exception $t) {
-				SIB_Push_Utils::log_error('Could not get application', $t);
+				SIB_Push_Utils::log_warn('Could not get application', $t);
 				$push_app = null;
 			}
 			$web_key = $push_app ? $push_app->getWebKey() : null;
@@ -121,7 +121,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			try {
 				$push_app = SIB_Push_Utils::get_push_application();
 			} catch (Exception $t) {
-				SIB_Push_Utils::log_error('Could not get application', $t);
+				SIB_Push_Utils::log_warn('Could not get application', $t);
 				$push_app = null;
 			}
 			$web_key = $push_app ? $push_app->getWebKey() : null;
@@ -157,7 +157,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 				if (!$app) return false;
 				return self::application_is_active($app);
 			} catch (Exception $e) {
-				SIB_Push_Utils::log_error('Could not get application', $e);
+				SIB_Push_Utils::log_warn('Could not get application', $e);
 				return false;
 			}
 		}
@@ -187,7 +187,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			try {
 				$app = self::get_push_application(SIB_Push_Utils::DEFAULT_CACHE_TTL, true);
 			} catch (Exception $t) {
-				SIB_Push_Utils::log_error('Could not get application', $t);
+				SIB_Push_Utils::log_warn('Could not get application', $t);
 			}
 			if (!$app) return;
 			$settings = SIB_Push_Settings::getSettings();
@@ -198,6 +198,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			$webSdkInitOptions = $app->getWebSdkInitOptions() ?: new \WonderPush\Obj\WebSdkInitOptions();
 			$webSdkInitOptions->setResubscribe(false);
 			$payload = array(
+				'wordPressSnippetDeactivated' => true,
 				'webSdkInitOptions' => $webSdkInitOptions,
 				'pushDisabledPlatforms' => array(
 					'Web' => true,
@@ -222,9 +223,10 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			// Check push application
 			try {
 				$app = self::get_push_application();
-				return !!$app;
+				if (!$app) return false;
+				return !$app->getWordPressSnippetDeactivated();
 			} catch (Exception $e) {
-				SIB_Push_Utils::log_error('Could not get application', $e);
+				SIB_Push_Utils::log_warn('Could not get application', $e);
 				return false;
 			}
 		}
@@ -249,6 +251,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			$webSdkInitOptions = $app->getWebSdkInitOptions() ?: new \WonderPush\Obj\WebSdkInitOptions();
 			$webSdkInitOptions->setResubscribe(true);
 			$payload = array(
+				'wordPressSnippetDeactivated' => false,
 				'webSdkInitOptions' => $webSdkInitOptions,
 				'pushDisabledPlatforms' => array(
 					'Web' => false,
@@ -265,6 +268,8 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 		 * @return bool
 		 */
 		public static function application_is_active($app) {
+			$wordPressSnippetDeactivated = $app->getWordPressSnippetDeactivated();
+			if ($wordPressSnippetDeactivated) return false;
 			$webSdkInitOptions = $app->getWebSdkInitOptions() ?: new \WonderPush\Obj\WebSdkInitOptions();
 			$pushDisabledPlatforms = $app->getPushDisabledPlatforms() ?: array();
 			$pushDisabled = isset($pushDisabledPlatforms['Web']) && $pushDisabledPlatforms['Web'];
@@ -337,7 +342,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 				set_transient($cache_key, $show_push ? 'true' : 'false', 86400);
 				return $show_push;
 			} catch ( Exception $e ) {
-				SIB_Push_Utils::log_error('Could not get showPush', $e);
+				SIB_Push_Utils::log_warn('Could not get showPush', $e);
 				return false;
 			}
 		}
@@ -586,7 +591,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 				self::update_push_application_cache('miss');
 				return null;
 			} catch (Exception $e) {
-				self::log_error('Error getting application', $e);
+				self::log_warn('Error getting application', $e);
 
 				// If we have a cached value, return it regardless of maxAge
 				if ($cached && is_array($cached) && isset($cached['app']) && $cached['app'] instanceof \WonderPush\Obj\Application) {
@@ -624,7 +629,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 				$result = $wp->events()->track($params);
 				return $result->isSuccess();
 			} catch (Exception $e) {
-				self::log_error("Error tracking event", $e);
+				self::log_warn("Error tracking event", $e);
 				return false;
 			}
 		}
